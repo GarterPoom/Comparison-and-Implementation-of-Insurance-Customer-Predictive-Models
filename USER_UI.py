@@ -27,7 +27,6 @@ st.info('BMI has trend similar with age as well as when compare with charge. If 
 # Select the columns to include in the chart
 st.subheader('Sex count')
 sex_count = pd.DataFrame(df['sex'].value_counts()).reset_index()
-region_count = pd.DataFrame(df['region'].value_counts()).reset_index()
 sex_count.columns = ['sex', 'count']
 
 fig = px.bar(
@@ -35,7 +34,7 @@ fig = px.bar(
         x="sex",
         y="count",
         title="Sex Count",
-        color_discrete_sequence=["#03ecfc"],
+        color_discrete_sequence=["#0303ff"],
     )
 st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
