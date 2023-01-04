@@ -1,10 +1,6 @@
 import streamlit as st
 import pandas as pd
-#from sklearn.preprocessing import MinMaxScaler, StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.cluster import DBSCAN
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error
+import pickle
 
 # Load the data
 df = pd.read_csv("insurance.csv")
@@ -13,23 +9,6 @@ df = pd.read_csv("insurance.csv")
 X = df[["age", "sex", "bmi", "children", "smoker", "region"]]
 y = df["charges"]
 X = pd.get_dummies(X)  # One-hot encode categorical variables
-#std = StandardScaler()
-#X = std.fit_transform(X)
-
-# Split the data into training and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Cluster the data using DBSCAN
-dbscan = DBSCAN()
-clusters = dbscan.fit_predict(X_train)
-
-# Train a random forest regression model
-model = RandomForestRegressor(n_estimators=100)
-model.fit(X_train, y_train)
-
-# Test the model on the test set
-y_pred = model.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
 
 # Create a form for the user to input the necessary information
 age = st.number_input("What is your age?", min_value=0, max_value=120)
@@ -49,8 +28,18 @@ inputs = pd.DataFrame({
     "region": [region]
 })
 inputs = pd.get_dummies(inputs)  # One-hot encode categorical variables
-#inputs = std.transform(inputs)  # Scale the inputs
-prediction = model.predict(inputs)[0]
+
+#Load normalization
+load_nor = pickle.load(open('normalization.pkl', 'rb'))
+
+#Apply the normalization model to new data
+inputs = load_nor.transform(inputs)
+
+#Deploy Random Forest Regression
+load_RAN = pickle.load(open('regression.pkl', 'rb'))
+
+#Apply the Random Forest Regression to new data
+prediction = load_RAN.predict(inputs)[0]
 
 # Display the prediction
 st.write(f"Predicted charges: ${prediction:.2f}")
